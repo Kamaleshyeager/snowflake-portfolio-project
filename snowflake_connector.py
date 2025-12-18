@@ -1,14 +1,20 @@
-import snowflake.connector
 import streamlit as st
-import pandas as pd
 
-@st.cache_resource
 def init_connection():
-    try: return snowflake.connector.connect(**st.secrets["snowflake"], client_session_keep_alive=True)
-    except: return None
-
-@st.cache_data(ttl=600)
-def run_query(_conn, query):
     try:
-        cursor = _conn.cursor(); cursor.execute(query); return cursor.fetch_pandas_all()
-    except Exception as e: st.error(f"Query error: {e}"); return pd.DataFrame()
+        import snowflake.connector
+        return snowflake.connector.connect(**st.secrets["snowflake"])
+    except Exception as e:
+        st.error(f"Snowflake Connector Error: {e}")
+        return None
+
+def run_query(query):
+    try:
+        conn = init_connection()
+        if conn:
+            with conn.cursor() as cur:
+                cur.execute(query)
+                return cur.fetchall()
+    except Exception as e:
+        st.error(f"Query Error: {e}")
+    return None
