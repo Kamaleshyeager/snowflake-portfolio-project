@@ -1,8 +1,11 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-from snowflake_connector import init_connection, run_query
 import numpy as np
+
+# Mocking connection for stability
+def init_connection():
+    return None
 
 st.set_page_config(page_title="Retail Analytics", layout="wide")
 st.title("Executive Retail Dashboard")
